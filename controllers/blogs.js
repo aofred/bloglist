@@ -11,15 +11,15 @@ const getTokenFrom = request => {
     return null
 }
 
-blogsRouter.get('/', async (req, res) => {
+blogsRouter.get('/', async (request, response) => {
     const blogs = await Blog
         .find({}).populate('user', { username: 1, name: 1, id: 1})
     
-    res.json(blogs)
+    response.json(blogs)
 })
 
-blogsRouter.post('/', async (req, res) => {
-    const body = req.body
+blogsRouter.post('/', async (request, response) => {
+    const body = request.body
     
     const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
     if (!decodedToken.id) {    
@@ -33,13 +33,13 @@ blogsRouter.post('/', async (req, res) => {
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
-    res.json(savedBlog)
+    response.json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete('/:id', async (request, response) => {
     try {
         await Blog.findByIdAndRemove(req.params.id)
-        res.status(204).end()
+        response.status(204).end()
     } catch (exception) {
         console.error(exception)
     }
